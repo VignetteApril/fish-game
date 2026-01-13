@@ -1,11 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
 import Game from './components/Game.vue'
-import { inject } from '@vercel/analytics';
-
-onMounted(async () => {
-  inject();
-});
 </script>
 
 <template>
