@@ -7,7 +7,7 @@ const user = ref(null)
 export function useGameCloud() {
     // === 1. 登录逻辑 (集成埋点) ===
     // 修改点：接收 providerName 参数，默认值为 'github'
-    const login = async (providerName = 'github') => {
+    const login = async (providerName = 'google') => {
 
         // 2. 【核心埋点】记录用户点击了登录
         track('Login Clicked', {
