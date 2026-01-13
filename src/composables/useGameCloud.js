@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { supabase } from '../lib/supabase'
-import { event as gaEvent } from 'vue-gtag'; // 只保留 GA
+import { event as gaEvent } from 'vue-gtag-next';
 
 const user = ref(null)
 
