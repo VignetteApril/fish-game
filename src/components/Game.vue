@@ -10,7 +10,7 @@
           <p class="hint">登录以同步云端存档，冲击排行榜！</p>
           <div class="btn-group">
             <button class="btn primary-btn" @click="handleLogin">
-              <span class="icon">🐙</span> Google 一键登录
+              <span class="icon">G</span> Google 一键登录
             </button>
             <button class="btn guest-btn" @click="handleGuestStart">
               游客试玩 (不存档)

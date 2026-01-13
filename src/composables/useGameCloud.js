@@ -1,23 +1,39 @@
 import { ref } from 'vue'
 import { supabase } from '../lib/supabase'
+import { track } from '@vercel/analytics'; // 1. 引入 Analytics
 
 const user = ref(null)
 
 export function useGameCloud() {
-    // === 1. 登录逻辑 ===
-    const login = async () => {
-        // 这里演示 GitHub 登录，记得在 Supabase 后台 Auth -> Providers 里启用 GitHub
+    // === 1. 登录逻辑 (集成埋点) ===
+    // 修改点：接收 providerName 参数，默认值为 'github'
+    const login = async (providerName = 'github') => {
+
+        // 2. 【核心埋点】记录用户点击了登录
+        track('Login Clicked', {
+            provider: providerName,
+            timestamp: new Date().toISOString()
+        });
+
+        console.log(`📡 [Analytics] Tracking login click: ${providerName}`);
+
+        // 3. 开始 OAuth 流程
         const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: { redirectTo: window.location.origin } // 登录后跳回当前页
+            provider: providerName, // 使用传入的参数 (github 或 google)
+            options: { redirectTo: window.location.origin }
         })
-        if (error) console.error('Login failed:', error)
+
+        if (error) {
+            console.error('Login failed:', error);
+            // (可选) 上报登录错误
+            track('Login Error', { provider: providerName, error: error.message });
+        }
     }
 
     const logout = async () => {
         await supabase.auth.signOut()
         user.value = null
-        window.location.reload()
+        window.location.reload() // 刷新页面清除状态
     }
 
     // === 2. 检查当前用户 ===
@@ -46,7 +62,7 @@ export function useGameCloud() {
         else console.log('☁️ Auto-saved to cloud!')
     }
 
-    // === 4. 读取存档 ===
+    // === 4. 读取存档 (处理新用户) ===
     const loadGameData = async () => {
         if (!user.value) return null
 
@@ -56,7 +72,6 @@ export function useGameCloud() {
             .single()
 
         if (error) {
-            // === 关键修改 ===
             // 如果错误代码是 PGRST116，说明是“无结果”，即新用户
             if (error.code === 'PGRST116') {
                 console.log('👶 新用户，无云端存档');
